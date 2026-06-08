@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+  </script>
   <body
     style="
       background-color: #ffffff;
@@ -18,9 +19,65 @@
       body {
         font-family: "Computer Modern Sans", sans-serif;
       }
+
+      .dog-walk {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        height: 1.5em;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .dog-walk__strip {
+        width: 400%;
+        height: 100%;
+        background-image: url(assets/dog_walk.png);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        animation: dog-walk-cycle 0.55s steps(4) infinite;
+      }
+      @keyframes dog-walk-cycle {
+        from { transform: translateX(-75%); }
+        to   { transform: translateX(25%); }
+      }
     </style>
 
-    <!--Figuring out how to place things-->
+    <!--TOP BAR-->
+    <div
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        background-color: rgba(0, 0, 0, 0.25);
+        color: #fff;
+        justify-content: space-between;
+      "
+    >
+      <p style="margin-left: 16px">milesOS</p>
+      <div class="dog-walk" aria-hidden="true">
+        <div class="dog-walk__strip"></div>
+      </div>
+      <p id="timeElement" style="margin-right: 16px">Time</p>
+    </div>
+
+    <script>
+     function updateTime() {
+        var currentTime = new Date().toLocaleString();
+        var timeText = document.querySelector("#timeElement");
+        timeText.innerHTML = currentTime;
+    }
+    setInterval(updateTime, 1000);
+    </script>
+
+    <!--MAIN-->
     <div
       style="
         border: solid;
