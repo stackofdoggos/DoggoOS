@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+  </script>
+  <body
+    style="
+      background-color: #ffffff;
+      background-image: url(assets/555462856_25639402368981613_6079599269604147602_n.png);
+      background-size: cover;
+      height: 100vh;
+      background-position: center;
+    "
+  >
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/fonts.css"
+    />
+    <style>
+      body {
+        font-family: "Computer Modern Sans", sans-serif;
+      }
+
+      .dog-walk {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        height: 1.5em;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .dog-walk__strip {
+        width: 400%;
+        height: 100%;
+        background-image: url(assets/dog_walk.png);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        animation: dog-walk-cycle 0.55s steps(4) infinite;
+      }
+      @keyframes dog-walk-cycle {
+        from { transform: translateX(-75%); }
+        to   { transform: translateX(25%); }
+      }
+    </style>
+
+    <!--TOP BAR-->
+    <div
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        background-color: rgba(0, 0, 0, 0.25);
+        color: #fff;
+        justify-content: space-between;
+      "
+    >
+      <p style="margin-left: 16px">milesOS</p>
+      <div class="dog-walk" aria-hidden="true">
+        <div class="dog-walk__strip"></div>
+      </div>
+      <p id="timeElement" style="margin-right: 16px">Time</p>
+    </div>
+
+    <script>
+     function updateTime() {
+        var currentTime = new Date().toLocaleString();
+        var timeText = document.querySelector("#timeElement");
+        timeText.innerHTML = currentTime;
+    }
+    setInterval(updateTime, 1000);
+    </script>
+
+    <!--MAIN-->
+    <div
+      style="
+        border: solid;
+        border-radius: 16px;
+        padding: 2%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgb(254, 254, 254);
+      "
+    >
+      <img
+        style="
+          border-radius: 100px;
+          object-fit: cover;
+          width: 50px;
+          height: 50px;
+        "
+        src="assets/6f04d948-bb0a-44b6-8aa4-a78ecc70f756.jpg"
+      />
+
+      <h1 style="margin-top: -8px; margin-bottom: -8px">milesOS</h1>
+
+      <p style="margin-top: 0px">
+        A website which should introduce you to me, hopefully!
+      </p>
+
+      <p>A scene from my favorite movie (Ocean's 11)</p>
+
+      <img
+        style="border-radius: 16px; object-fit: cover"
+        src="assets/emp-oceans-11.gif"
+        alt="my favorite movie"
+      />
+
+      <p></p>
+
+      <a
+        href="https://open.spotify.com/playlist/37i9dQZF1F5p3rmiWPIYgZ?si=26af273779d342d2"
+        >My Liked Songs (Spotify)</a
+      >
+    </div>
+  </body>
+</html>
