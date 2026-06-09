@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-  </script>
   <body
     style="
       background-color: #ffffff;
@@ -41,8 +40,44 @@
         animation: dog-walk-cycle 0.55s steps(4) infinite;
       }
       @keyframes dog-walk-cycle {
-        from { transform: translateX(-75%); }
-        to   { transform: translateX(25%); }
+        from {
+          transform: translateX(-75%);
+        }
+        to {
+          transform: translateX(25%);
+        }
+      }
+
+      .titlebar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+        height: 28px;
+        background: linear-gradient(to bottom, #ececec, #d5d5d5);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        cursor: grab;
+        user-select: none;
+      }
+      .titlebar:active {
+        cursor: grabbing;
+      }
+      .tl {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+        flex-shrink: 0;
+        display: inline-block;
+      }
+      .tl--close {
+        background: #ff5f57;
+      }
+      .tl--min {
+        background: #febc2e;
+      }
+      .tl--max {
+        background: #28c840;
       }
     </style>
 
@@ -69,57 +104,69 @@
     </div>
 
     <script>
-     function updateTime() {
+      function updateTime() {
         var currentTime = new Date().toLocaleString();
         var timeText = document.querySelector("#timeElement");
         timeText.innerHTML = currentTime;
-    }
-    setInterval(updateTime, 1000);
+      }
+      setInterval(updateTime, 1000);
     </script>
 
     <!--MAIN-->
     <div
+      id="window"
       style="
-        border: solid;
-        border-radius: 16px;
-        padding: 2%;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         background: rgb(254, 254, 254);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18),
+          0 12px 40px rgba(0, 0, 0, 0.3);
       "
     >
-      <img
-        style="
-          border-radius: 100px;
-          object-fit: cover;
-          width: 50px;
-          height: 50px;
-        "
-        src="assets/6f04d948-bb0a-44b6-8aa4-a78ecc70f756.jpg"
-      />
+      <div id="windowheader" class="titlebar" aria-label="Drag to move window">
+        <span class="tl tl--close" aria-hidden="true"></span>
+        <span class="tl tl--min" aria-hidden="true"></span>
+        <span class="tl tl--max" aria-hidden="true"></span>
+      </div>
 
-      <h1 style="margin-top: -8px; margin-bottom: -8px">milesOS</h1>
+      <div style="padding: 14px 20px 20px">
+        <img
+          style="
+            border-radius: 100px;
+            object-fit: cover;
+            width: 50px;
+            height: 50px;
+          "
+          src="assets/6f04d948-bb0a-44b6-8aa4-a78ecc70f756.jpg"
+        />
 
-      <p style="margin-top: 0px">
-        A website which should introduce you to me, hopefully!
-      </p>
+        <h1 style="margin-top: -8px; margin-bottom: -8px">milesOS</h1>
 
-      <p>A scene from my favorite movie (Ocean's 11)</p>
+        <p style="margin-top: 0px">
+          A website which should introduce you to me, hopefully!
+        </p>
 
-      <img
-        style="border-radius: 16px; object-fit: cover"
-        src="assets/emp-oceans-11.gif"
-        alt="my favorite movie"
-      />
+        <p>A scene from my favorite movie (Ocean's 11)</p>
 
-      <p></p>
+        <img
+          style="border-radius: 16px; object-fit: cover"
+          src="assets/emp-oceans-11.gif"
+          alt="my favorite movie"
+        />
 
-      <a
-        href="https://open.spotify.com/playlist/37i9dQZF1F5p3rmiWPIYgZ?si=26af273779d342d2"
-        >My Liked Songs (Spotify)</a
-      >
+        <p></p>
+
+        <a
+          href="https://open.spotify.com/playlist/37i9dQZF1F5p3rmiWPIYgZ?si=26af273779d342d2"
+          >My Liked Songs (Spotify)</a
+        >
+      </div>
     </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
