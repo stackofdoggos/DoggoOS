@@ -1,58 +1,151 @@
-// Make the DIV element draggable:
-dragElement(document.getElementById("window"));
+// ---------------------------------------------------------------------------
+// WindowManager: turns any element with [data-window] into a macOS-style
+// window (draggable by its .window__titlebar, raised on click, with buttons
+// that declare their behavior via data-action="close|minimize|maximize").
+//
+// Multiple windows can coexist; each maintains its own drag/focus state.
+// To add a new window, just drop the markup into the page -- no JS needed:
+//
+//   <div class="window" data-window id="my-app">
+//     <div class="window__titlebar">
+//       <button class="tl tl--close" data-action="close"></button>
+//       <button class="tl tl--min"   data-action="minimize"></button>
+//       <button class="tl tl--max"   data-action="maximize"></button>
+//     </div>
+//     <div class="window__body">...</div>
+//   </div>
+//
+// And open it programmatically with WindowManager.open("my-app").
+// ---------------------------------------------------------------------------
+(function () {
+  var topZ = 100;
+  var registry = Object.create(null);
 
-// Step 1: Define a function called `dragElement` that makes an HTML element draggable.
-function dragElement(element) {
-  // Step 2: Set up variables to keep track of the element's position.
-  var initialX = 0;
-  var initialY = 0;
-  var currentX = 0;
-  var currentY = 0;
+  function resolve(target) {
+    if (typeof target === "string") return registry[target] || null;
+    return target || null;
+  }
 
-  // Step 3: Check if there is a special header element associated with the draggable element.
-  if (document.getElementById(element.id + "header")) {
-    // Step 4: If present, assign the `dragMouseDown` function to the header's `onmousedown` event.
-    // This allows you to drag the window around by its header.
-    document.getElementById(element.id + "header").onmousedown = startDragging;
+  function focus(el) {
+    if (!el) return;
+    topZ += 1;
+    el.style.zIndex = String(topZ);
+  }
+
+  function open(target) {
+    var el = resolve(target);
+    if (!el) return;
+    el.style.display = "";
+    focus(el);
+  }
+
+  function close(target) {
+    var el = resolve(target);
+    if (!el) return;
+    el.style.display = "none";
+  }
+
+  function minimize(_el) {
+    // Stub: placeholder for future dock-style minimize behavior.
+  }
+
+  function maximize(_el) {
+    // Stub: placeholder for future fullscreen toggle.
+  }
+
+  // Replace transform/percentage-based centering with explicit pixel
+  // top/left the first time a window is dragged, so subsequent drags don't
+  // fight the transform offset.
+  function pinPosition(el) {
+    if (el.dataset.wmPinned === "1") return;
+    var rect = el.getBoundingClientRect();
+    el.style.top = rect.top + "px";
+    el.style.left = rect.left + "px";
+    el.style.transform = "none";
+    el.dataset.wmPinned = "1";
+  }
+
+  function makeDraggable(windowEl, handleEl) {
+    var initialX = 0;
+    var initialY = 0;
+
+    handleEl.addEventListener("mousedown", function (e) {
+      // Don't initiate a drag if the user clicked on a titlebar button.
+      if (e.target.closest("[data-action]")) return;
+
+      e.preventDefault();
+      focus(windowEl);
+      pinPosition(windowEl);
+      initialX = e.clientX;
+      initialY = e.clientY;
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", stopDrag);
+    });
+
+    function onMove(e) {
+      e.preventDefault();
+      var dx = initialX - e.clientX;
+      var dy = initialY - e.clientY;
+      initialX = e.clientX;
+      initialY = e.clientY;
+      windowEl.style.top = windowEl.offsetTop - dy + "px";
+      windowEl.style.left = windowEl.offsetLeft - dx + "px";
+    }
+
+    function stopDrag() {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", stopDrag);
+    }
+  }
+
+  function register(el) {
+    if (!el || el.dataset.wmRegistered === "1") return;
+    if (!el.id) el.id = "win-" + Math.random().toString(36).slice(2, 8);
+    registry[el.id] = el;
+    el.dataset.wmRegistered = "1";
+
+    var titlebar = el.querySelector(".window__titlebar");
+    if (titlebar) makeDraggable(el, titlebar);
+
+    // Wire titlebar buttons to their declared actions.
+    el.querySelectorAll("[data-action]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var action = btn.getAttribute("data-action");
+        if (action === "close") close(el);
+        else if (action === "minimize") minimize(el);
+        else if (action === "maximize") maximize(el);
+      });
+    });
+
+    // Clicking anywhere on a window brings it to the front.
+    el.addEventListener("mousedown", function () {
+      focus(el);
+    });
+
+    focus(el);
+  }
+
+  function init() {
+    document.querySelectorAll("[data-window]").forEach(register);
+  }
+
+  window.WindowManager = {
+    init: init,
+    register: register,
+    open: open,
+    close: close,
+    focus: function (target) {
+      focus(resolve(target));
+    },
+    get: function (id) {
+      return registry[id] || null;
+    },
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    // Step 5: If not present, assign the function directly to the draggable element's `onmousedown` event.
-    // This allows you to drag the window by holding down anywhere on the window.
-    element.onmousedown = startDragging;
+    init();
   }
-
-  // Step 6: Define the `startDragging` function to capture the initial mouse position and set up event listeners.
-  function startDragging(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // Step 7: Get the mouse cursor position at startup.
-    initialX = e.clientX;
-    initialY = e.clientY;
-    // Step 8: Set up event listeners for mouse movement (`elementDrag`) and mouse button release (`closeDragElement`).
-    document.onmouseup = stopDragging;
-    document.onmousemove = dragElement;
-    // Force a "grabbing" cursor across the whole document while dragging,
-    // so it doesn't flicker if the cursor briefly leaves the titlebar.
-    document.body.style.cursor = "grabbing";
-  }
-
-  // Step 9: Define the `elementDrag` function to calculate the new position of the element based on mouse movement.
-  function dragElement(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // Step 10: Calculate the new cursor position.
-    currentX = initialX - e.clientX;
-    currentY = initialY - e.clientY;
-    initialX = e.clientX;
-    initialY = e.clientY;
-    // Step 11: Update the element's new position by modifying its `top` and `left` CSS properties.
-    element.style.top = element.offsetTop - currentY + "px";
-    element.style.left = element.offsetLeft - currentX + "px";
-  }
-
-  // Step 12: Define the `stopDragging` function to stop tracking mouse movement by removing the event listeners.
-  function stopDragging() {
-    document.onmouseup = null;
-    document.onmousemove = null;
-    document.body.style.cursor = "";
-  }
-}
+})();
