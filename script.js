@@ -243,9 +243,18 @@
     el.style.height = g.height + "px";
   }
 
+  function isFixedSize(el) {
+    return el && el.hasAttribute("data-no-resize");
+  }
+
   function maximize(target) {
     var el = resolve(target);
-    if (!el || el.dataset.wmMinimized === "1" || el.dataset.wmAnimating === "1")
+    if (
+      !el ||
+      isFixedSize(el) ||
+      el.dataset.wmMinimized === "1" ||
+      el.dataset.wmAnimating === "1"
+    )
       return;
     pinPosition(el);
 
@@ -330,9 +339,16 @@
   }
 
   // -- Dragging ------------------------------------------------------------------
+  var RESIST_DIST = 48; // cursor overshoot needed to push a window past a screen edge
+  var FAST_DELTA = 16; // px per mousemove considered "fast" (skips edge resistance)
+
   function makeDraggable(windowEl, handleEl) {
     var grabDX = 0;
     var grabDY = 0;
+    var lastX = 0;
+    var lastY = 0;
+    // Per-edge "the user pushed through" flags; re-engage once back inside.
+    var broken = { left: false, right: false, bottom: false };
 
     handleEl.addEventListener("mousedown", function (e) {
       // Don't initiate a drag if the user clicked on a titlebar button.
@@ -343,23 +359,16 @@
       focus(windowEl);
       pinPosition(windowEl);
 
-      // Dragging a maximized window "tears" it off into its restored size,
-      // keeping the cursor over the titlebar (like macOS).
-      if (windowEl.dataset.wmMaximized === "1") {
-        var prev = JSON.parse(windowEl.dataset.wmPrevGeom || "{}");
-        var rect = windowEl.getBoundingClientRect();
-        var ratio = (e.clientX - rect.left) / rect.width;
-        windowEl.dataset.wmMaximized = "";
-        windowEl.classList.remove("window--maximized");
-        windowEl.style.width = prev.autoWidth ? "" : prev.width + "px";
-        windowEl.style.height = prev.autoHeight ? "" : prev.height + "px";
-        var w = windowEl.offsetWidth;
-        windowEl.style.left = e.clientX - w * ratio + "px";
-        windowEl.style.top = e.clientY - 14 + "px";
-      }
-
       grabDX = e.clientX - windowEl.offsetLeft;
       grabDY = e.clientY - windowEl.offsetTop;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      // If the window already overhangs an edge, don't suck it back in.
+      broken.left = windowEl.offsetLeft < 0;
+      broken.right =
+        windowEl.offsetLeft + windowEl.offsetWidth > window.innerWidth;
+      broken.bottom =
+        windowEl.offsetTop + windowEl.offsetHeight > window.innerHeight;
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", stopDrag);
       window.addEventListener("blur", stopDrag);
@@ -368,17 +377,57 @@
     // Double-click on the titlebar toggles maximize (macOS zoom).
     handleEl.addEventListener("dblclick", function (e) {
       if (e.target.closest("[data-action]")) return;
+      if (isFixedSize(windowEl)) return;
       maximize(windowEl);
     });
 
     function onMove(e) {
       e.preventDefault();
-      // Absolute positioning from the original grab point, clamped so the
-      // titlebar can never leave the screen (above the topbar, below the
-      // viewport, or too far off either side).
-      windowEl.style.top = clampTop(e.clientY - grabDY) + "px";
-      windowEl.style.left =
-        clampLeft(e.clientX - grabDX, windowEl.offsetWidth) + "px";
+      // macOS-style sticky edges: at low speeds a window holds at the screen
+      // edge until pushed RESIST_DIST past it, then pops free and follows the
+      // cursor. Fast drags skip the resistance entirely.
+      var fast =
+        Math.abs(e.clientX - lastX) > FAST_DELTA ||
+        Math.abs(e.clientY - lastY) > FAST_DELTA;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      var w = windowEl.offsetWidth;
+      var h = windowEl.offsetHeight;
+      var left = e.clientX - grabDX;
+      var top = e.clientY - grabDY;
+
+      if (w <= window.innerWidth) {
+        if (left < 0) {
+          if (!broken.left && (fast || -left > RESIST_DIST)) broken.left = true;
+          if (!broken.left) left = 0;
+        } else {
+          broken.left = false;
+        }
+
+        var rightLimit = window.innerWidth - w;
+        if (left > rightLimit) {
+          if (!broken.right && (fast || left - rightLimit > RESIST_DIST))
+            broken.right = true;
+          if (!broken.right) left = rightLimit;
+        } else {
+          broken.right = false;
+        }
+      }
+
+      var bottomLimit = window.innerHeight - h;
+      if (top > bottomLimit) {
+        if (!broken.bottom && (fast || top - bottomLimit > RESIST_DIST))
+          broken.bottom = true;
+        if (!broken.bottom) top = bottomLimit;
+      } else {
+        broken.bottom = false;
+      }
+
+      // Hard limits: the titlebar must always stay reachable (below the
+      // topbar, above the bottom of the screen, not too far off the sides).
+      windowEl.style.top = clampTop(top) + "px";
+      windowEl.style.left = clampLeft(left, w) + "px";
     }
 
     function stopDrag() {
@@ -416,6 +465,12 @@
 
     var titlebar = el.querySelector(".window__titlebar");
     if (titlebar) makeDraggable(el, titlebar);
+
+    if (isFixedSize(el)) {
+      el.classList.add("window--fixed");
+      var maxBtn = el.querySelector('[data-action="maximize"]');
+      if (maxBtn) maxBtn.hidden = true;
+    }
 
     // Wire titlebar buttons to their declared actions.
     el.querySelectorAll("[data-action]").forEach(function (btn) {

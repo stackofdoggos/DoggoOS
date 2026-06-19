@@ -62,10 +62,75 @@
 
     <!--Apps-->
 
-
+    <!--JPOKEMON WINDOW (closed by default, fixed size)-->
+    <div
+      id="jpokemon"
+      class="window"
+      data-window
+      data-no-resize
+      data-appname="jpokemon"
+      style="display: none; top: 60px; left: 180px; width: 720px; height: 536px"
+    >
+      <div class="window__titlebar" aria-label="Drag to move window">
+        <div class="tl-group">
+          <button
+            class="tl tl--close"
+            data-action="close"
+            aria-label="Close"
+          ></button>
+          <button
+            class="tl tl--min"
+            data-action="minimize"
+            aria-label="Minimize"
+          ></button>
+          <button
+            class="tl tl--max"
+            data-action="maximize"
+            aria-label="Maximize"
+            hidden
+          ></button>
+        </div>
+        <span class="window__title">jpokemon</span>
+      </div>
+      <div class="window__body">
+        <div class="jpokemon-shell">
+          <canvas
+            id="jpokemon-canvas"
+            width="720"
+            height="480"
+            tabindex="0"
+            aria-label="Pokemon Emerald overworld demo"
+          ></canvas>
+          <p class="jpokemon-loading" id="jpokemon-loading">Loading Route 101…</p>
+          <p class="jpokemon-error" id="jpokemon-error" hidden></p>
+          <footer class="jpokemon-footer">
+            <span>Created by Miles · Java jpokemon</span>
+            <span>WASD move · Space/E signs · Enter advance</span>
+            <a
+              href="https://github.com/stackofdoggos/jpokemon"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub</a
+            >
+          </footer>
+        </div>
+      </div>
+    </div>
 
     <!--DESKTOP-->
     <div class="desktop" id="desktop">
+      <div
+        class="app-icon"
+        data-app="jpokemon"
+        title="jpokemon (double-click to open)"
+      >
+        <img
+          class="app-icon__image app-icon__image--sprite"
+          src="jpokemon/art/entities/players/Brendan/walking/walkdown/down0.png"
+          alt="jpokemon icon"
+        />
+        <p class="app-icon__label">jpokemon</p>
+      </div>
       <div
         class="app-icon"
         data-app="notes"
@@ -220,6 +285,14 @@
 
     <!--DOCK-->
     <div class="dock" id="dock">
+      <button class="dock-item" data-app="jpokemon" data-label="jpokemon">
+        <img
+          class="dock-item__sprite"
+          src="jpokemon/art/entities/players/Brendan/walking/walkdown/down0.png"
+          alt="jpokemon"
+        />
+        <span class="dock-item__dot"></span>
+      </button>
       <button class="dock-item" data-app="welcome" data-label="Welcome">
         <img src="assets/6f04d948-bb0a-44b6-8aa4-a78ecc70f756.jpg" alt="Welcome" />
         <span class="dock-item__dot"></span>
@@ -232,5 +305,6 @@
 
     <script src="script.js"></script>
     <script src="notes.js"></script>
+    <script src="jpokemon.js"></script>
   </body>
 </html>

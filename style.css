@@ -266,6 +266,21 @@ body {
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
   pointer-events: none;
 }
+.app-icon__image--sprite {
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: rgba(24, 48, 24, 0.85);
+}
+.dock-item__sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-radius: 12px;
+  background: rgba(24, 48, 24, 0.85);
+}
 .app-icon__label {
   margin: 6px 0 0;
   color: #fff;
@@ -602,7 +617,69 @@ body {
   color: #15803d;
   text-decoration: underline;
 }
-.notes-content img {
-  max-width: 100%;
-  border-radius: 6px;
+/* =========================================================================
+   jpokemon app (fixed-size game window)
+   ========================================================================= */
+.window--fixed {
+  resize: none;
+}
+#jpokemon .window__body {
+  padding: 0;
+  height: 508px;
+  overflow: hidden;
+  background: #000;
+}
+.jpokemon-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+#jpokemon-canvas {
+  display: block;
+  width: 720px;
+  height: 480px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  outline: none;
+}
+.jpokemon-loading,
+.jpokemon-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.72);
+  pointer-events: none;
+}
+.jpokemon-error {
+  color: #fecaca;
+  max-width: 420px;
+  text-align: center;
+}
+.jpokemon-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+  color: #cbd5e1;
+  background: linear-gradient(to bottom, #1a1a1a, #111);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+.jpokemon-footer a {
+  color: #86efac;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.jpokemon-footer a:hover {
+  text-decoration: underline;
 }

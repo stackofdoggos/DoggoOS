@@ -19,10 +19,10 @@
       date: "06/09/2026",
       content:
         "<h2>Welcome to Notes</h2>" +
-        "<p>Sharp. Folded. Precise.</p>" +
+        "<p>A little about the app.</p>" +
         "<p>This notes app lives on your milesOS desktop. Click <strong>+ New Note</strong> in the sidebar to start writing. Use the toolbar above to format text however you'd like.</p>" +
-        "<blockquote>The pen is mightier than the sword, but a folded-paper sword is mightier than both.</blockquote>" +
-        "<p>Everything you type is saved automatically to your browser, so your notes survive page reloads.</p>",
+        "<blockquote>The pen is mightier than the sword, but a folded-paper sword is mightier than both :D</blockquote>" +
+        "<p>Everything you type is saved automatically to your browser.</p>",
     },
     {
       title: "About Kartana",
@@ -37,9 +37,9 @@
       title: "Sharp Notes",
       date: "06/09/2026",
       content:
-        "<h2>Sharp Notes</h2>" +
-        "<p>A few things to remember today:</p>" +
-        "<ul><li>Build the OS, one window at a time.</li><li>Make every detail intentional.</li><li>Stay sharp.</li></ul>",
+        "<h2>More About Me</h2>" +
+        "<p>A few more things about me:</p>" +
+        "<ul><li>I work in a lab</li><li>I'm a huge huge sports fan, so much so that I coach my own basketball team</li><li>In my free time, I'm usually reading textbooks or coding or playing basketball</li></ul>",
     },
   ];
 
@@ -66,7 +66,7 @@
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ notes: notes, version: 1 })
+        JSON.stringify({ notes: notes, version: 1 }),
       );
     } catch (e) {}
   }
@@ -250,7 +250,10 @@
           cmd === "strikeThrough"
         ) {
           active = document.queryCommandState(cmd);
-        } else if (cmd === "insertUnorderedList" || cmd === "insertOrderedList") {
+        } else if (
+          cmd === "insertUnorderedList" ||
+          cmd === "insertOrderedList"
+        ) {
           active = document.queryCommandState(cmd);
         } else if (cmd.indexOf("formatBlock:") === 0) {
           var want = cmd.split(":")[1].toLowerCase();
