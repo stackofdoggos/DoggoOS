@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="jpokemon">
+  <rect width="64" height="64" rx="14" fill="#1f6b3a"/>
+  <rect x="8" y="8" width="48" height="48" rx="8" fill="#2d8f4e"/>
+  <rect x="14" y="18" width="36" height="28" rx="4" fill="#174f2c"/>
+  <rect x="18" y="22" width="28" height="20" rx="2" fill="#8fd4a0"/>
+  <circle cx="32" cy="32" r="6" fill="#fff" stroke="#174f2c" stroke-width="2"/>
+  <path d="M32 26v12M26 32h12" stroke="#174f2c" stroke-width="2" stroke-linecap="round"/>
+</svg>
