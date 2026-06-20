@@ -1,0 +1,6 @@
+# Copy this file to public_html/.htaccess (one level above the OS folder).
+# Sends visitors from the domain root to milesOS.
+
+DirectoryIndex index.html
+RewriteEngine On
+RewriteRule ^$ /OS/ [R=302,L]
