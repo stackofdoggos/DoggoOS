@@ -1,0 +1,6 @@
+DirectoryIndex index.html
+Options -Indexes
+
+# Keep /OS and /OS/ consistent so asset paths resolve correctly.
+RewriteEngine On
+RewriteRule ^$ index.html [L]
